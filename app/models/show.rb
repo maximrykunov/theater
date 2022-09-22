@@ -6,7 +6,11 @@ class Show < ApplicationRecord
 
   validate :validate_overlap
 
-  scope :in_range, ->(sd, fd) { where('start_date >= ? AND finish_date <= ?', sd, fd) }
+  def self.in_range(start_date, finish_date)
+    where('(start_date >= :sd AND start_date <= :fd) OR (finish_date >= :sd AND finish_date <= :fd) OR (start_date <= :fd AND finish_date >= :sd)',
+          sd: start_date,
+          fd: finish_date)
+  end
 
   private
 

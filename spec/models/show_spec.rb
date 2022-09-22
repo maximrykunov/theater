@@ -32,6 +32,30 @@ RSpec.describe Show, type: :model do
     let!(:initial_show) { create(:show) }
     let(:show) { build :show }
 
+    context 'existing show is inside new' do
+      before do
+        show.start_date = initial_show.start_date - 2.days
+        show.finish_date = initial_show.finish_date + 2.day
+      end
+
+      it 'return the error' do
+        expect(show).to be_invalid
+        expect(show.errors[:overlap_error]).to include('There is already a show scheduled in this period!')
+      end
+    end
+
+    context 'new show is inside existing show' do
+      before do
+        show.start_date = initial_show.start_date + 2.days
+        show.finish_date = initial_show.finish_date - 2.day
+      end
+
+      it 'return the error' do
+        expect(show).to be_invalid
+        expect(show.errors[:overlap_error]).to include('There is already a show scheduled in this period!')
+      end
+    end
+
     context 'start_date is overlaping' do
       before do
         show.start_date = initial_show.finish_date
